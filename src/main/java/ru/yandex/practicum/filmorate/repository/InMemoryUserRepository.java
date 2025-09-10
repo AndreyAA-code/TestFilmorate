@@ -21,4 +21,9 @@ public class InMemoryUserRepository {
     public Collection<Film> getAllfilms(){
        return films.values();
     }
+
+    public <Film> addFilm(Film film){
+
+        return film;
+    }
 }
