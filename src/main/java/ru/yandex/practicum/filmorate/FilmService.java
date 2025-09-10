@@ -23,7 +23,7 @@ public class FilmService {
     return userRepository.getAllfilms();
     }
 
-    public <Film> addFilm(Film film){
+    public Film addFilm(Film film){
         return userRepository.add(film);
     }
 
