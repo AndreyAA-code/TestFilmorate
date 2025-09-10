@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.AllArgsConstructor;
-import lombok.experimental.Accessors;
-import org.springframework.aot.generate.InMemoryGeneratedFiles;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.repository.InMemoryUserRepository;
+import ru.yandex.practicum.filmorate.repository.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.InMemoryFilmRepository;
 
 import java.util.Collection;
-import java.util.List;
 
 //переделать на интерфейс
 //добавить класс в памяти
@@ -17,14 +16,19 @@ import java.util.List;
 @AllArgsConstructor
 public class FilmService {
 
-    private final InMemoryUserRepository userRepository = new InMemoryUserRepository();
+    @Qualifier("inMemoryFilmRepository")
+    public final FilmRepository filmRepository;
 
     public Collection<Film> getAllFilms(){
-    return userRepository.getAllfilms();
+    return filmRepository.getAllFilms();
     }
 
     public Film addFilm(Film film){
-        return userRepository.add(film);
+        return filmRepository.addFilm(film);
+    }
+
+    public Film updateFilm(Film film){
+        return filmRepository.updateFilm(film);
     }
 
 
