@@ -2,8 +2,6 @@ package ru.yandex.practicum.filmorate.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.sql.Date;
 import java.time.LocalDate;
 
 public class DataBeginFilmEraValidator implements ConstraintValidator<DataBeginFilmEra, LocalDate> {
