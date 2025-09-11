@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.FilmService;
+import ru.yandex.practicum.filmorate.exceptions.ParameterNotValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -19,6 +20,12 @@ public class FilmController {
     public Collection<Film> getAllFilms() {
         return filmService.getAllFilms();
     }
+
+    @GetMapping("{id}")
+    public Film getFilmById(@Valid @PathVariable Long id) {
+            return filmService.getFilmById(id);
+    }
+
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {

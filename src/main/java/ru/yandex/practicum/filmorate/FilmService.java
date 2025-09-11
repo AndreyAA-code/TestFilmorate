@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.InMemoryFilmRepository;
@@ -29,6 +30,10 @@ public class FilmService {
 
     public Film updateFilm(Film film){
         return filmRepository.updateFilm(film);
+    }
+
+    public Film getFilmById(Long id){
+        return filmRepository.getFilmById(id);
     }
 
 

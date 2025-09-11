@@ -15,4 +15,6 @@ public interface FilmRepository {
     public Long getNextId();
 
     public Film updateFilm(Film film);
+
+    public Film getFilmById(Long id);
 }

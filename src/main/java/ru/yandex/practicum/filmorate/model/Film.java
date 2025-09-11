@@ -17,7 +17,7 @@ import java.util.Date;
  */
 @Data
 public class Film {
-    private long id;
+    private Long id;
     @NotBlank
     private String name;
     @Size(max=200)

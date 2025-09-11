@@ -28,4 +28,9 @@ public class DbFilmRepository implements FilmRepository {
     public Film updateFilm(Film film) {
         return null;
     }
+
+    @Override
+    public Film getFilmById(Long id) {
+        return null;
+    }
 }

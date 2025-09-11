@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.MethodArgumentNotValidException;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -43,6 +45,7 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Film updateFilm(Film newFilm) {
+
         Film oldFilm = films.get(newFilm.getId());
         oldFilm.setName(newFilm.getName());
         oldFilm.setDescription(newFilm.getDescription());
@@ -50,5 +53,16 @@ public class InMemoryFilmRepository implements FilmRepository {
         oldFilm.setReleaseDate(newFilm.getReleaseDate());
         return oldFilm;
     }
+
+    @Override
+    public Film getFilmById(Long id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Film with id " + id + " not found");
+        }
+        try
+        {return films.get(id);
+    } catch (MethodArgumentNotValidException e) {
+            e
+        }
 }
 
