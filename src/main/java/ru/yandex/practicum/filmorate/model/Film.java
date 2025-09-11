@@ -9,6 +9,7 @@ import lombok.Setter;
 import ru.yandex.practicum.filmorate.validation.DataBeginFilmEra;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -16,13 +17,13 @@ import java.util.Date;
  */
 @Data
 public class Film {
-    long id;
+    private long id;
     @NotBlank
-    String name;
+    private String name;
     @Size(max=200)
-    String description;
+    private String description;
     @DataBeginFilmEra
-    Date releaseDate;
+    private LocalDate releaseDate;
     @Min(0)
-    Long duration;
+    private Long duration;
 }
