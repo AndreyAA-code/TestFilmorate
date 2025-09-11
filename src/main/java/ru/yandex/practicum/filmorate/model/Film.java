@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.validation.DataBeginFilmEra;
 
 import java.time.Duration;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class Film {
     String name;
     @Size(max=200)
     String description;
+    @DataBeginFilmEra
     Date releaseDate;
     @Min(0)
     Long duration;
