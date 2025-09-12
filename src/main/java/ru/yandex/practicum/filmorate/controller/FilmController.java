@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.FilmService;
-import ru.yandex.practicum.filmorate.exceptions.ParameterNotValidException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -23,9 +22,8 @@ public class FilmController {
 
     @GetMapping("{id}")
     public Film getFilmById(@Valid @PathVariable Long id) {
-            return filmService.getFilmById(id);
+        return filmService.getFilmById(id);
     }
-
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
@@ -37,5 +35,9 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
+    @DeleteMapping("/{id}")
+    public Film deleteFilmById(@PathVariable Long id) {
+        return filmService.deleteFilmById(id);
+    }
 
 }

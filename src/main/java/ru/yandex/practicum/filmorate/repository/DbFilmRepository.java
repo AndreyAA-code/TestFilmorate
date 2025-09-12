@@ -33,4 +33,9 @@ public class DbFilmRepository implements FilmRepository {
     public Film getFilmById(Long id) {
         return null;
     }
+
+    @Override
+    public Film deleteFilmById(Long id) {
+        return null;
+    }
 }

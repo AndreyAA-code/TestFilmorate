@@ -1,14 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class User {
-    long id;
-    String email;
-    String login;
-    String name;
-    Date birthDate;
+    private Long id;
+    @Email
+    private String email;
+    @NotBlank
+    @Pattern(regexp = "[^\s]*")
+    private String login;
+    private String name;
+    @PastOrPresent
+    private LocalDate birthday;
 }

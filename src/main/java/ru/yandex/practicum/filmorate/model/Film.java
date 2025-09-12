@@ -4,13 +4,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import ru.yandex.practicum.filmorate.validation.DataBeginFilmEra;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Film.
