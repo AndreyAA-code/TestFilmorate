@@ -43,7 +43,7 @@ public class InMemoryUserRepository implements UserRepository {
         checkUserId(newUser);
         User oldUser = users.get(newUser.getId());
         if (newUser.getName() == null || newUser.getName().isEmpty()) {
-           newUser.setName(newUser.getLogin());
+            newUser.setName(newUser.getLogin());
         }
         oldUser.setLogin(newUser.getLogin());
         oldUser.setName(newUser.getName());
@@ -63,6 +63,10 @@ public class InMemoryUserRepository implements UserRepository {
         }
     }
 
+    public Collection<Long> getUserFriends(Long id) {
+        return users.get(id).getFriends();
+    }
+
     public Long getNextId() {
         Long nextId = users.keySet()
                 .stream()
@@ -72,5 +76,10 @@ public class InMemoryUserRepository implements UserRepository {
         return ++nextId;
     }
 
-
+    @Override
+    public Long updateUserFriends(Long id, Long friendId) {
+        users.get(id).getFriends().add(friendId);
+        users.get(friendId).getFriends().add(id);
+        return users.get(id).getId();
+    }
 }

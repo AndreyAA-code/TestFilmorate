@@ -3,6 +3,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.InMemoryUserRepository;
@@ -36,5 +37,15 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteUser(id);
     }
+
+    public Collection<Long> getUserFriends (Long id) {
+       return userRepository.getUserFriends(id);
+    }
+
+    public Long updateUserFriends(Long id, Long friendId) {
+        return userRepository.updateUserFriends(id, friendId);
+    }
+
+
 
 }
