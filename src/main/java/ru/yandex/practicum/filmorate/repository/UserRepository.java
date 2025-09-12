@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.List;
 
 @Primary
 public interface UserRepository {
@@ -21,7 +22,7 @@ public interface UserRepository {
 
     void deleteUser(Long id);
 
-    Collection<Long> getUserFriends (Long id);
+    List<User> getUserFriends (Long id);
 
-    Long updateUserFriends(Long id, Long friendId);
+    List<User> updateUserFriends(Long id, Long friendId);
 }

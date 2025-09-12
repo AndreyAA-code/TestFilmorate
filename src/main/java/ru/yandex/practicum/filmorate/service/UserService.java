@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.repository.InMemoryUserRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -38,11 +39,11 @@ public class UserService {
         userRepository.deleteUser(id);
     }
 
-    public Collection<Long> getUserFriends (Long id) {
+    public List<User> getUserFriends (Long id) {
        return userRepository.getUserFriends(id);
     }
 
-    public Long updateUserFriends(Long id, Long friendId) {
+    public List<User> updateUserFriends(Long id, Long friendId) {
         return userRepository.updateUserFriends(id, friendId);
     }
 

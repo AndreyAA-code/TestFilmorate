@@ -1,15 +1,19 @@
 package ru.yandex.practicum.filmorate.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Repository
+@Slf4j
 
 public class InMemoryUserRepository implements UserRepository {
 
@@ -54,6 +58,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void deleteUser(Long id) {
+        checkUserId(users.get(id));
         users.remove(id);
     }
 
@@ -63,8 +68,14 @@ public class InMemoryUserRepository implements UserRepository {
         }
     }
 
-    public Collection<Long> getUserFriends(Long id) {
-        return users.get(id).getFriends();
+    public List<User> getUserFriends(Long id) {
+        checkUserId(users.get(id));
+        List<User> friends = users.get(id).getFriends()
+                .stream()
+                .map(eid -> users.get(eid))
+                .collect(Collectors.toList());
+        System.out.println("ПЕРЕДАЮДРУГА для ид"+users.get(id)+"  а друзья:"+ friends);
+        return friends;
     }
 
     public Long getNextId() {
@@ -77,9 +88,15 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Long updateUserFriends(Long id, Long friendId) {
+    public List<User> updateUserFriends(Long id, Long friendId) {
+        checkUserId(users.get(id));
+        checkUserId(users.get(friendId));
         users.get(id).getFriends().add(friendId);
         users.get(friendId).getFriends().add(id);
-        return users.get(id).getId();
+        List<User> friends = users.get(id).getFriends()
+                .stream()
+                .map(userId->users.get(userId))
+                .collect(Collectors.toList());
+        return friends;
     }
 }
