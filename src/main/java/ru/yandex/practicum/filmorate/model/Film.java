@@ -7,6 +7,7 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.DataBeginFilmEra;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Film.
@@ -22,4 +23,5 @@ public class Film {
     private LocalDate releaseDate;
     @Min(0)
     private Long duration;
+    private Set<User> likes;
 }
