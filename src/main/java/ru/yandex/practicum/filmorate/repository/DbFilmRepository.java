@@ -48,4 +48,9 @@ public class DbFilmRepository implements FilmRepository {
     public Film deleteLikeUser(Long id, Long userId) {
         return null;
     }
+
+    @Override
+    public Collection<Film> getPopularFilms(Long count) {
+        return List.of();
+    }
 }

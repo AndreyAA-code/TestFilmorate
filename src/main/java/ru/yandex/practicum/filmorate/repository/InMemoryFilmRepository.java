@@ -77,6 +77,12 @@ public class InMemoryFilmRepository implements FilmRepository {
         }
     }
 
+    @Override
+    public Collection<Film> getPopularFilms(Long count) {
+
+        return filmRepository.getPopularFilms(count);
+    }
+
     public Long getNextId() {
         Long maxID = films.keySet()
                 .stream()

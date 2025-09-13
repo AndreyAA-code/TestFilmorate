@@ -25,4 +25,6 @@ public interface FilmRepository {
 
     public Film deleteLikeUser(Long id, Long userId);
 
+    public Collection<Film> getPopularFilms(Long count);
+
 }
