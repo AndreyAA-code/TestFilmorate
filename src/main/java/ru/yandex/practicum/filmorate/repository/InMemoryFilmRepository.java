@@ -44,7 +44,9 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Film updateFilm(Film newFilm) {
-
+if(!films.containsKey(newFilm.getId())){
+    throw new NotFoundException("Film with id " + newFilm.getId() + "  found");
+}
         Film oldFilm = films.get(newFilm.getId());
         oldFilm.setName(newFilm.getName());
         oldFilm.setDescription(newFilm.getDescription());

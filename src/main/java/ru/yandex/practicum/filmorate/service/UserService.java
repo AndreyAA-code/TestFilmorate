@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -51,7 +52,7 @@ public class UserService {
         return userRepository.deleteUserFriends(id,friendId);
     }
 
-    public List<User> getCommonFriends(Long id, Long otherId) {
+    public Set<User> getCommonFriends(Long id, Long otherId) {
         return userRepository.getCommonFriends(id, otherId);
     }
 

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Primary
 public interface UserRepository {
@@ -28,6 +29,6 @@ public interface UserRepository {
 
     List<User> deleteUserFriends(Long id, Long friendId);
 
-    List<User> getCommonFriends(Long id, Long otherId);
-    }
+    Set<User> getCommonFriends(Long id, Long otherId);
+
 }

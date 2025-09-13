@@ -5,10 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -120,9 +117,18 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> getCommonFriends(Long id, Long otherId) {
+    public Set<User> getCommonFriends(Long id, Long otherId) {
         checkUserId(id);
         checkUserId(otherId);
-
+        Set<User> friends1 = users.get(id).getFriends()
+                .stream()
+                .map(userId->users.get(userId))
+                .collect(Collectors.toSet());
+        Set<User> friends2 =users.get(otherId).getFriends()
+                .stream()
+                .map(userId->users.get(userId))
+                .collect(Collectors.toSet());
+        friends1.retainAll(friends2);
+        return friends1;
     }
 }
