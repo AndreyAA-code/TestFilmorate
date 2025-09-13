@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import static java.util.Arrays.stream;
 public class InMemoryFilmRepository implements FilmRepository {
 
     private final HashMap<Long, Film> films = new HashMap<>();
+    private final UserService userService;
 
     @Override
     public Collection<Film> getAllFilms() {
@@ -32,21 +35,8 @@ public class InMemoryFilmRepository implements FilmRepository {
     }
 
     @Override
-    public Long getNextId() {
-        Long maxID = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0L);
-                return ++maxID;
-    }
-
-
-    @Override
     public Film updateFilm(Film newFilm) {
-if(!films.containsKey(newFilm.getId())){
-    throw new NotFoundException("Film with id " + newFilm.getId() + "  found");
-}
+        checkIfFilmExists(newFilm.getId());
         Film oldFilm = films.get(newFilm.getId());
         oldFilm.setName(newFilm.getName());
         oldFilm.setDescription(newFilm.getDescription());
@@ -57,18 +47,44 @@ if(!films.containsKey(newFilm.getId())){
 
     @Override
     public Film getFilmById(Long id) {
+        checkIfFilmExists(id);
+        return films.get(id);
+    }
+
+    @Override
+    public Film deleteFilmById(Long id) {
+        checkIfFilmExists(id);
+        return films.remove(id);
+    }
+
+    @Override
+    public Film likeFilmById(Long id, Long userId) {
+        checkIfFilmExists(id);
+        films.get(id).getLikes().add(userService.getUserById(userId));
+        return films.get(id);
+    }
+
+    @Override
+    public Film deleteLikeUser(Long id, Long userId) {
+        checkIfFilmExists(id);
+        films.get(id).getLikes().remove(userService.getUserById(userId));
+        return films.get(id);
+    }
+
+    public void checkIfFilmExists(Long id) {
         if (!films.containsKey(id)) {
             throw new NotFoundException("Film with id " + id + " not found");
         }
-            return films.get(id);
-        }
+    }
 
-        @Override
-    public Film deleteFilmById(Long id) {
-            if (!films.containsKey(id)) {
-                throw new NotFoundException("Film with id " + id + " not found");
-            }
-           return films.remove(id);
-        }
+    public Long getNextId() {
+        Long maxID = films.keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0L);
+        return ++maxID;
+    }
+
 }
 

@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
 
@@ -18,6 +20,7 @@ public class FilmService {
 
     @Qualifier("inMemoryFilmRepository")
     public final FilmRepository filmRepository;
+    public final UserRepository userRepository;
 
     public Collection<Film> getAllFilms() {
         return filmRepository.getAllFilms();
@@ -37,6 +40,14 @@ public class FilmService {
 
     public Film deleteFilmById(Long id) {
         return filmRepository.deleteFilmById(id);
+    }
+
+    public Film likeFilmById(Long id, Long userId) {
+        return filmRepository.likeFilmById(id, userId);
+    }
+
+    public Film deleteLikeUser(@PathVariable Long id, @PathVariable Long userId) {
+        return filmRepository.deleteLikeUser(id, userId);
     }
 
 }

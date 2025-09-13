@@ -38,4 +38,14 @@ public class DbFilmRepository implements FilmRepository {
     public Film deleteFilmById(Long id) {
         return null;
     }
+
+    @Override
+    public Film likeFilmById(Long id, Long userId) {
+        return null;
+    }
+
+    @Override
+    public Film deleteLikeUser(Long id, Long userId) {
+        return null;
+    }
 }
