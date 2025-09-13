@@ -25,4 +25,9 @@ public interface UserRepository {
     List<User> getUserFriends (Long id);
 
     List<User> updateUserFriends(Long id, Long friendId);
+
+    List<User> deleteUserFriends(Long id, Long friendId);
+
+    List<User> getCommonFriends(Long id, Long otherId);
+    }
 }

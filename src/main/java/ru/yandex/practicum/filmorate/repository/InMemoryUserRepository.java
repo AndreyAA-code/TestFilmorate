@@ -44,7 +44,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User updateUser(User newUser) {
-        checkUserId(newUser);
+        checkUser(newUser);
         User oldUser = users.get(newUser.getId());
         if (newUser.getName() == null || newUser.getName().isEmpty()) {
             newUser.setName(newUser.getLogin());
@@ -58,23 +58,29 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void deleteUser(Long id) {
-        checkUserId(users.get(id));
+        checkUser(users.get(id));
         users.remove(id);
     }
 
-    public void checkUserId(User user) {
+    public void checkUser(User user) {
         if (!users.containsKey(user.getId())) {
             throw new NotFoundException("User with id " + user.getId() + " not found");
         }
     }
 
+    public void checkUserId(Long id) {
+        if (users.get(id) == null){
+            throw new NotFoundException("User with id " + id + " not found");
+        }
+    }
+
+    @Override
     public List<User> getUserFriends(Long id) {
-        checkUserId(users.get(id));
+        checkUserId(id);
         List<User> friends = users.get(id).getFriends()
                 .stream()
-                .map(eid -> users.get(eid))
+                .map(userId -> users.get(userId))
                 .collect(Collectors.toList());
-        System.out.println("ПЕРЕДАЮДРУГА для ид"+users.get(id)+"  а друзья:"+ friends);
         return friends;
     }
 
@@ -89,8 +95,8 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public List<User> updateUserFriends(Long id, Long friendId) {
-        checkUserId(users.get(id));
-        checkUserId(users.get(friendId));
+        checkUserId(id);
+        checkUserId(friendId);
         users.get(id).getFriends().add(friendId);
         users.get(friendId).getFriends().add(id);
         List<User> friends = users.get(id).getFriends()
@@ -98,5 +104,25 @@ public class InMemoryUserRepository implements UserRepository {
                 .map(userId->users.get(userId))
                 .collect(Collectors.toList());
         return friends;
+    }
+
+@Override
+    public List<User> deleteUserFriends(Long id, Long friendId) {
+        checkUserId(id);
+        checkUserId(friendId);
+        users.get(id).getFriends().remove(friendId);
+        users.get(friendId).getFriends().remove(id);
+        List<User> friends = users.get(id).getFriends()
+                .stream()
+                .map(userId->users.get(userId))
+                .collect(Collectors.toList());
+        return friends;
+    }
+
+    @Override
+    public List<User> getCommonFriends(Long id, Long otherId) {
+        checkUserId(id);
+        checkUserId(otherId);
+
     }
 }

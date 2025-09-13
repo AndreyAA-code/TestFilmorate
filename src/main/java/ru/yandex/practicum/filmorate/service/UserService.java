@@ -47,6 +47,12 @@ public class UserService {
         return userRepository.updateUserFriends(id, friendId);
     }
 
+    public List<User> deleteUserFriends(Long id, Long friendId) {
+        return userRepository.deleteUserFriends(id,friendId);
+    }
 
+    public List<User> getCommonFriends(Long id, Long otherId) {
+        return userRepository.getCommonFriends(id, otherId);
+    }
 
 }
