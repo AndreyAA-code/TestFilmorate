@@ -3,15 +3,14 @@ package ru.yandex.practicum.filmorate.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
-
-import static java.util.Arrays.stream;
+import java.util.stream.Collectors;
 
 @Primary
 @Repository
@@ -79,12 +78,15 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Collection<Film> getPopularFilms(Long count) {
-
-        return popularfilms;
+        return films.values()
+                .stream()
+                .sorted(Comparator.comparing((Film film) -> film.getLikes().size()).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Long getNextId() {
-        Long maxID = films.keySet()
+        long maxID = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()

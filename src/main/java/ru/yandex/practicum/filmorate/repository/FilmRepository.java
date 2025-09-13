@@ -9,22 +9,20 @@ import java.util.Collection;
 @Primary
 public interface FilmRepository {
 
-    public Film addFilm(Film film);
+    Film addFilm(Film film);
 
-    public Collection<Film> getAllFilms();
+    Collection<Film> getAllFilms();
 
-    public Long getNextId();
+    Film updateFilm(Film film);
 
-    public Film updateFilm(Film film);
+    Film getFilmById(Long id);
 
-    public Film getFilmById(Long id);
+    Film deleteFilmById(Long id);
 
-    public Film deleteFilmById(Long id);
+    Film likeFilmById(Long id, Long userId);
 
-    public Film likeFilmById(Long id, Long userId);
+    Film deleteLikeUser(Long id, Long userId);
 
-    public Film deleteLikeUser(Long id, Long userId);
-
-    public Collection<Film> getPopularFilms(Long count);
+    Collection<Film> getPopularFilms(Long count);
 
 }

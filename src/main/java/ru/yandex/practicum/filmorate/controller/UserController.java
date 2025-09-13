@@ -29,8 +29,7 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@Valid @PathVariable Long id) {
-        List<User> friends = userService.getUserFriends(id);
-        return friends;
+        return userService.getUserFriends(id);
     }
 
     @PostMapping

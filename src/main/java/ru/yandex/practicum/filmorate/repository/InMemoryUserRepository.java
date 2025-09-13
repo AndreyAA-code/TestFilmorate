@@ -74,11 +74,10 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getUserFriends(Long id) {
         checkUserId(id);
-        List<User> friends = users.get(id).getFriends()
+        return users.get(id).getFriends()
                 .stream()
                 .map(userId -> users.get(userId))
                 .collect(Collectors.toList());
-        return friends;
     }
 
     public Long getNextId() {
@@ -96,11 +95,10 @@ public class InMemoryUserRepository implements UserRepository {
         checkUserId(friendId);
         users.get(id).getFriends().add(friendId);
         users.get(friendId).getFriends().add(id);
-        List<User> friends = users.get(id).getFriends()
+        return users.get(id).getFriends()
                 .stream()
                 .map(userId->users.get(userId))
                 .collect(Collectors.toList());
-        return friends;
     }
 
 @Override
@@ -109,11 +107,10 @@ public class InMemoryUserRepository implements UserRepository {
         checkUserId(friendId);
         users.get(id).getFriends().remove(friendId);
         users.get(friendId).getFriends().remove(id);
-        List<User> friends = users.get(id).getFriends()
+        return users.get(id).getFriends()
                 .stream()
                 .map(userId->users.get(userId))
                 .collect(Collectors.toList());
-        return friends;
     }
 
     @Override
