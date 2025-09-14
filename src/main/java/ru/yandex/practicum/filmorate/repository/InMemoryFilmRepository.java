@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
@@ -20,6 +19,13 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     private final HashMap<Long, Film> films = new HashMap<>();
     private final UserService userService;
+    private final Map<Long, Mpa> mpas = Map.of(
+            1L, new Mpa(1L, "G"),
+            2L, new Mpa(2L, "PG"),
+            3L, new Mpa(3L, "PG-13"),
+            4L, new Mpa(4L, "R"),
+            5L, new Mpa(5L, "NC-17")
+    );
 
     @Override
     public Collection<Film> getAllFilms() {
@@ -29,6 +35,7 @@ public class InMemoryFilmRepository implements FilmRepository {
     @Override
     public Film addFilm(Film film) {
         film.setId(getNextId());
+        film.setMpa(mpas.get(film.getMpa().getId()));
         films.put(film.getId(), film);
         return film;
     }
