@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -19,12 +20,20 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     private final HashMap<Long, Film> films = new HashMap<>();
     private final UserService userService;
-    private final Map<Long, Mpa> mpas = Map.of(
+    private final Map<Long, Mpa> mpaLevel = Map.of(
             1L, new Mpa(1L, "G"),
             2L, new Mpa(2L, "PG"),
             3L, new Mpa(3L, "PG-13"),
             4L, new Mpa(4L, "R"),
             5L, new Mpa(5L, "NC-17")
+    );
+    private final Map<Long, Genre>  genreLevel = Map.of(
+            1L, new Genre(1L,"Комедия"),
+            2L, new Genre(2L,"Драма"),
+            3L, new Genre(3L,"Мультфильм"),
+            4L, new Genre(4L,"Триллер"),
+            5L, new Genre(5L,"Документальный"),
+            6L, new Genre(6L,"Боевик")
     );
 
     @Override
@@ -35,7 +44,11 @@ public class InMemoryFilmRepository implements FilmRepository {
     @Override
     public Film addFilm(Film film) {
         film.setId(getNextId());
-        film.setMpa(mpas.get(film.getMpa().getId()));
+        film.setMpa(mpaLevel.get(film.getMpa().getId()));
+        film.setGenres(film.getGenres()
+                .stream()
+                .map(genre -> genreLevel.get(genre.getId()))
+                .collect(Collectors.toSet()));
         films.put(film.getId(), film);
         return film;
     }
@@ -48,6 +61,11 @@ public class InMemoryFilmRepository implements FilmRepository {
         oldFilm.setDescription(newFilm.getDescription());
         oldFilm.setDuration(newFilm.getDuration());
         oldFilm.setReleaseDate(newFilm.getReleaseDate());
+        oldFilm.setMpa(mpaLevel.get(newFilm.getMpa().getId()));
+        oldFilm.setGenres(newFilm.getGenres()
+                .stream()
+                .map(genre -> genreLevel.get(genre.getId()))
+                .collect(Collectors.toSet()));
         return oldFilm;
     }
 
