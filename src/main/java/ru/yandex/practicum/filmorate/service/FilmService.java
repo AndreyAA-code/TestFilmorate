@@ -1,14 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.repository.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
 
 import java.util.Collection;
+import java.util.List;
 
 //переделать на интерфейс
 //добавить класс в памяти
@@ -53,4 +58,22 @@ public class FilmService {
     public Collection<Film> getPopularFilms(Long count) {
         return filmRepository.getPopularFilms(count);
     }
+
+    public Collection<Genre> getGenres() {
+        return filmRepository.getGenres();
+    }
+
+    public Genre getGenresById(Long id) {
+        return filmRepository.getGenresById(id);
+    }
+
+    public Collection<Mpa> getMpas() {
+        return filmRepository.getMpas();
+    }
+
+    public Mpa getMpaById(Long id) {
+        return filmRepository.getMpaById(id);
+    }
+
+
 }

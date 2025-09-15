@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.repository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -48,7 +50,8 @@ public class InMemoryFilmRepository implements FilmRepository {
         film.setGenres(film.getGenres()
                 .stream()
                 .map(genre -> genreLevel.get(genre.getId()))
-                .collect(Collectors.toSet()));
+                .sorted(Comparator.comparing(Genre::getId))
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
         films.put(film.getId(), film);
         return film;
     }
@@ -62,10 +65,12 @@ public class InMemoryFilmRepository implements FilmRepository {
         oldFilm.setDuration(newFilm.getDuration());
         oldFilm.setReleaseDate(newFilm.getReleaseDate());
         oldFilm.setMpa(mpaLevel.get(newFilm.getMpa().getId()));
+
         oldFilm.setGenres(newFilm.getGenres()
                 .stream()
                 .map(genre -> genreLevel.get(genre.getId()))
-                .collect(Collectors.toSet()));
+                .sorted(Comparator.comparing(Genre::getId))
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
         return oldFilm;
     }
 
@@ -110,6 +115,22 @@ public class InMemoryFilmRepository implements FilmRepository {
                 .collect(Collectors.toList());
     }
 
+    public Collection<Genre> getGenres() {
+        return filmRepository.getGenres();
+    }
+
+    public Genre getGenresById(Long id) {
+        return filmRepository.getGenresbyId(id);
+    }
+
+    public Collection<Mpa> getMpas() {
+        return filmRepository.getMpas();
+    }
+
+    public Mpa getMpaById(Long id) {
+        return filmRepository.getMpaById(id);
+    }
+
     public Long getNextId() {
         long maxID = films.keySet()
                 .stream()
@@ -118,6 +139,8 @@ public class InMemoryFilmRepository implements FilmRepository {
                 .orElse(0L);
         return ++maxID;
     }
+
+
 
 }
 

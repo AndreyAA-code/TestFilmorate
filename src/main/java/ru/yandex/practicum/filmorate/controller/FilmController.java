@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -59,4 +61,23 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    @GetMapping("/genres")
+    public Collection<Genre> getGenres() {
+        return filmService.getGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenreById(@Valid @PathVariable Long id) {
+        return filmService.getGenresById(id);
+    }
+
+    @GetMapping("/mpa")
+    public Collection<Mpa> getMpas() {
+        return filmService.getMpas();
+    }
+
+    @GetMapping("/genres/{id}")
+    public Mpa getMpaById(@Valid @PathVariable Long id) {
+        return filmService.getMpaById(id);
+    }
 }

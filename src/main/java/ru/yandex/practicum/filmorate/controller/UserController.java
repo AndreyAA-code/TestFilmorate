@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -61,5 +63,10 @@ public class UserController {
     public Set<User> getCommonFriends(@Valid @PathVariable Long id, @Valid @PathVariable Long otherId) {
         return userService.getCommonFriends(id, otherId);
     }
+
+
+
+
+
 
 }
