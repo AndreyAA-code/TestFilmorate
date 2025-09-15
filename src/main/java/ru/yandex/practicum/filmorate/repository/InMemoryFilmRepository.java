@@ -66,18 +66,22 @@ public class InMemoryFilmRepository implements FilmRepository {
     @Override
     public Film updateFilm(Film newFilm) {
         checkIfFilmExists(newFilm.getId());
+
+        if (!(newFilm.getGenres() == null)) {
+            newFilm.setGenres(newFilm.getGenres()
+                    .stream()
+                    .map(genre -> Optional.ofNullable(genreMap.get(genre.getId()))
+                            .orElseThrow(() -> new NotFoundException("Genre with id: " + genre.getId() + " not found")))
+                    .sorted(Comparator.comparing(Genre::getId))
+                    .collect(Collectors.toCollection(LinkedHashSet::new)));
+        }
+
         Film oldFilm = films.get(newFilm.getId());
         oldFilm.setName(newFilm.getName());
         oldFilm.setDescription(newFilm.getDescription());
         oldFilm.setDuration(newFilm.getDuration());
         oldFilm.setReleaseDate(newFilm.getReleaseDate());
         oldFilm.setMpa(mpaLevel.get(newFilm.getMpa().getId()));
-
-        oldFilm.setGenres(newFilm.getGenres()
-                .stream()
-                .map(genre -> genreMap.get(genre.getId()))
-                .sorted(Comparator.comparing(Genre::getId))
-                .collect(Collectors.toCollection(LinkedHashSet::new)));
         return oldFilm;
     }
 
