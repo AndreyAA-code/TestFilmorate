@@ -94,7 +94,7 @@ public class InMemoryUserRepository implements UserRepository {
         checkUserId(id);
         checkUserId(friendId);
         users.get(id).getFriends().add(friendId);
-        users.get(friendId).getFriends().add(id);
+        //users.get(friendId).getFriends().add(id); //изменилось правило в ФЗ 12
         return users.get(id).getFriends()
                 .stream()
                 .map(userId->users.get(userId))
@@ -106,7 +106,7 @@ public class InMemoryUserRepository implements UserRepository {
         checkUserId(id);
         checkUserId(friendId);
         users.get(id).getFriends().remove(friendId);
-        users.get(friendId).getFriends().remove(id);
+      //  users.get(friendId).getFriends().remove(id); //изменилось правило в ФЗ 12
         return users.get(id).getFriends()
                 .stream()
                 .map(userId->users.get(userId))

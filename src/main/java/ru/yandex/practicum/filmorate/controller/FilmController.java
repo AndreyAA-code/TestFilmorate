@@ -19,7 +19,6 @@ import java.util.List;
 public class FilmController {
 
     public final FilmService filmService;
-    private final UserService userService;
 
     @GetMapping
     public Collection<Film> getAllFilms() {
@@ -61,23 +60,4 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
-    @GetMapping("/genres")
-    public Collection<Genre> getGenres() {
-        return filmService.getGenres();
-    }
-
-    @GetMapping("/genres/{id}")
-    public Genre getGenreById(@Valid @PathVariable Long id) {
-        return filmService.getGenresById(id);
-    }
-
-    @GetMapping("/mpa")
-    public Collection<Mpa> getMpas() {
-        return filmService.getMpas();
-    }
-
-    @GetMapping("/genres/{id}")
-    public Mpa getMpaById(@Valid @PathVariable Long id) {
-        return filmService.getMpaById(id);
-    }
 }

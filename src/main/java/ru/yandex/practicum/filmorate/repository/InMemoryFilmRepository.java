@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.repository;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -29,7 +27,7 @@ public class InMemoryFilmRepository implements FilmRepository {
             4L, new Mpa(4L, "R"),
             5L, new Mpa(5L, "NC-17")
     );
-    private final Map<Long, Genre>  genreLevel = Map.of(
+    private final Map<Long, Genre> genreMap = Map.of(
             1L, new Genre(1L,"Комедия"),
             2L, new Genre(2L,"Драма"),
             3L, new Genre(3L,"Мультфильм"),
@@ -49,7 +47,7 @@ public class InMemoryFilmRepository implements FilmRepository {
         film.setMpa(mpaLevel.get(film.getMpa().getId()));
         film.setGenres(film.getGenres()
                 .stream()
-                .map(genre -> genreLevel.get(genre.getId()))
+                .map(genre -> genreMap.get(genre.getId()))
                 .sorted(Comparator.comparing(Genre::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new)));
         films.put(film.getId(), film);
@@ -68,7 +66,7 @@ public class InMemoryFilmRepository implements FilmRepository {
 
         oldFilm.setGenres(newFilm.getGenres()
                 .stream()
-                .map(genre -> genreLevel.get(genre.getId()))
+                .map(genre -> genreMap.get(genre.getId()))
                 .sorted(Comparator.comparing(Genre::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new)));
         return oldFilm;
@@ -115,20 +113,30 @@ public class InMemoryFilmRepository implements FilmRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Collection<Genre> getGenres() {
-        return filmRepository.getGenres();
+        return genreMap.values()
+                .stream()
+                .sorted(Comparator.comparing((Genre genre) -> genre.getId()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    @Override
     public Genre getGenresById(Long id) {
-        return filmRepository.getGenresbyId(id);
+        return genreMap.get(id);
     }
 
+    @Override
     public Collection<Mpa> getMpas() {
-        return filmRepository.getMpas();
+        return mpaLevel.values()
+                .stream()
+                .sorted(Comparator.comparing((Mpa mpa) -> mpa.getId()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    @Override
     public Mpa getMpaById(Long id) {
-        return filmRepository.getMpaById(id);
+        return mpaLevel.get(id);
     }
 
     public Long getNextId() {
