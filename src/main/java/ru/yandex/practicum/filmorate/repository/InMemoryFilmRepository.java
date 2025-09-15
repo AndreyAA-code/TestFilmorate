@@ -43,13 +43,22 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Film addFilm(Film film) {
+        if (film.getMpa().getId() == null || !mpaLevel.containsKey(film.getMpa().getId())) {
+            throw new NotFoundException("MPA with id " + film.getMpa().getId() + " not found");
+        }
+
+        if (!(film.getGenres() == null)) {
+            film.setGenres(film.getGenres()
+                    .stream()
+                    .map(genre -> Optional.ofNullable(genreMap.get(genre.getId()))
+                            .orElseThrow(() -> new NotFoundException("Genre with id: " + genre.getId() + " not found")))
+                    .sorted(Comparator.comparing(Genre::getId))
+                    .collect(Collectors.toCollection(LinkedHashSet::new)));
+        }
+
         film.setId(getNextId());
         film.setMpa(mpaLevel.get(film.getMpa().getId()));
-        film.setGenres(film.getGenres()
-                .stream()
-                .map(genre -> genreMap.get(genre.getId()))
-                .sorted(Comparator.comparing(Genre::getId))
-                .collect(Collectors.toCollection(LinkedHashSet::new)));
+
         films.put(film.getId(), film);
         return film;
     }
@@ -123,6 +132,7 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Genre getGenresById(Long id) {
+        checkGenreId(id);
         return genreMap.get(id);
     }
 
@@ -136,7 +146,20 @@ public class InMemoryFilmRepository implements FilmRepository {
 
     @Override
     public Mpa getMpaById(Long id) {
+        checkMpaId(id);
         return mpaLevel.get(id);
+    }
+
+    public void checkMpaId(Long id) {
+        if (!mpaLevel.containsKey(id)) {
+            throw new NotFoundException("MPA with id " + id + " not found");
+        }
+    }
+
+    public void checkGenreId(Long id) {
+        if (!genreMap.containsKey(id)) {
+            throw new NotFoundException("Genre with id " + id + " not found");
+        }
     }
 
     public Long getNextId() {
