@@ -14,15 +14,10 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.Collection;
 
 @RestController
-//@AllArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/genres")
 public class GenreController {
     public final FilmService filmService;
-
-    @Autowired // Добавьте эту аннотацию
-    public GenreController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @GetMapping
     public Collection<Genre> getGenres() {
