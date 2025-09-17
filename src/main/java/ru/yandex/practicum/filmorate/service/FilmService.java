@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +21,19 @@ import java.util.List;
 //добавить локальное сохранение и загрузку в/из файл
 
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 public class FilmService {
 
     @Qualifier("inMemoryFilmRepository")
+
     public final FilmRepository filmRepository;
     public final UserRepository userRepository;
+
+    @Autowired
+    public FilmService(FilmRepository filmRepository, UserRepository userRepository) {
+        this.filmRepository = filmRepository;
+        this.userRepository = userRepository;
+    }
 
     public Collection<Film> getAllFilms() {
         return filmRepository.getAllFilms();

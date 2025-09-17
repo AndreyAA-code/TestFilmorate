@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,11 +14,15 @@ import java.util.List;
 import java.util.Set;
 
 @RestController()
-@AllArgsConstructor
+//@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     public final UserService userService;
+@Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<User> getAllUsers() {

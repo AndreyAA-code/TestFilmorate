@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Collection;
 
-@Primary
+//@Primary
 public interface FilmRepository {
 
     Film addFilm(Film film);

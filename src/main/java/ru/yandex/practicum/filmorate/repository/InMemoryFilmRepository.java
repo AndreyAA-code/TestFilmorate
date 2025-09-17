@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
@@ -13,13 +14,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
-@Repository
-@RequiredArgsConstructor
+@Repository("InMemoryFilmRepository")
+//@RequiredArgsConstructor
 
 public class InMemoryFilmRepository implements FilmRepository {
 
     private final HashMap<Long, Film> films = new HashMap<>();
     private final UserService userService;
+    @Autowired
+    public InMemoryFilmRepository(UserService userService) {
+        this.userService = userService;
+    }
+
     private final Map<Long, Mpa> mpaLevel = Map.of(
             1L, new Mpa(1L, "G"),
             2L, new Mpa(2L, "PG"),
@@ -35,6 +41,7 @@ public class InMemoryFilmRepository implements FilmRepository {
             5L, new Genre(5L,"Документальный"),
             6L, new Genre(6L,"Боевик")
     );
+
 
     @Override
     public Collection<Film> getAllFilms() {

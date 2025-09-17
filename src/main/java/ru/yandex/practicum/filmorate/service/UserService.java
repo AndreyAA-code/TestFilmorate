@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.UserRepository;
@@ -9,11 +11,18 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 public class UserService {
 
-   // @Qualifier("InMemoryUserRepository")
+    @Qualifier("InMemoryUserRepository")
+
     public final UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
 
     public Collection<User> getAllUsers () {
         return userRepository.getAllUsers();
