@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-//@AllArgsConstructor
+@AllArgsConstructor
 public class UserService {
 
-    @Qualifier("InMemoryUserRepository")
+    //@Qualifier("InMemoryUserRepository")
 
     public final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+   // @Autowired
+   // public UserService(UserRepository userRepository) {
+   //     this.userRepository = userRepository;
+   // }
 
 
     public Collection<User> getAllUsers () {
