@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.repository;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -9,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
+@Primary
 public class DbFilmRepository implements FilmRepository {
 
     @Override

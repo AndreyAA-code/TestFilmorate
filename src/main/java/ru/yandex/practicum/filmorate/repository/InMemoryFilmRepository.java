@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Primary
 @Repository("InMemoryFilmRepository")
 @AllArgsConstructor
 
