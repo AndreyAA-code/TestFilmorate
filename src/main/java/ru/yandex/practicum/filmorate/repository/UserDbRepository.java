@@ -24,7 +24,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Primary
 public class UserDbRepository implements UserRepository {
-    private final JdbcTemplate jdbc;
+    private  JdbcTemplate jdbc;
     private final UserRowMapper mapper;
 
     @Override
@@ -46,7 +46,6 @@ public class UserDbRepository implements UserRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
 
-        //jdbc.update(sql, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
         jdbc.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, user.getEmail());
@@ -87,7 +86,15 @@ public class UserDbRepository implements UserRepository {
 
     @Override
     public List<User> updateUserFriends(Long id, Long friendId) {
-        return List.of();
+        String sql = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
+        jdbc.update(sql, id, friendId);
+
+
+
+
+        String sql1 = "SELECT * FROM users WHERE id = ?";
+        List<User> users = jdbc.query(sql1, mapper, id);
+        return users;
     }
 
     @Override
