@@ -16,8 +16,7 @@ import ru.yandex.practicum.filmorate.repository.mappers.MpaRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Primary
@@ -33,24 +32,32 @@ public class DbFilmRepository implements FilmRepository {
     @Override
     public Film addFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO films (name, description, release_date, duration) VALUES (?, ?, ?,?)";
+        String sql = "INSERT INTO films (name, description, release_date, duration, mpa)" +
+                " VALUES (?, ?, ?, ?, ?)";
+        String sql1 = "INSERT INTO genres_films (genre_id, film_id) VALUES (?, ?)";
 
         jdbc.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
-            ps.setLong (4, film.getDuration());
+            ps.setLong(4, film.getDuration());
+            ps.setLong(5,film.getMpa().getId());
             return ps;
         }, keyHolder);
         Long generatedId = keyHolder.getKey().longValue();
         film.setId(generatedId);
+        for (Genre genre : film.getGenres()) {
+            jdbc.update(sql1, genre.getId(),film.getId());
+        }
+
         return film;
     }
 
     @Override
     public Collection<Film> getAllFilms() {
-        String sql = "SELECT * FROM films;";
+        String sql = "SELECT films.*, mpa.name as mpa_name FROM films" +
+                " LEFT JOIN mpa ON films.mpa = mpa.id;";
         List <Film> films = jdbc.query(sql, filmRowMapper);
         return films;
     }
@@ -72,14 +79,22 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public Film getFilmById(Long id) {
-        String sql = "SELECT * FROM films WHERE id = ?;";
+        String sql = "SELECT films.*, mpa.name as mpa_name FROM films" +
+                " LEFT JOIN mpa ON films.mpa = mpa.id WHERE films.id = ?;";
+        String sql1 = "SELECT * FROM genres JOIN genres_films" +
+                " ON genres.id = genres_films.genre_id WHERE film_id = ?";
         Film film = jdbc.queryForObject(sql, filmRowMapper, id);
+        List<Genre> genres = jdbc.query(sql1, genreRowMapper, id);
+        film.setGenres(new LinkedHashSet<>(genres));
+        System.out.println(film.getGenres());
         return film;
     }
 
     @Override
     public Film deleteFilmById(Long id) {
-        return null;
+        String sql = "DELETE FROM films WHERE id =?;";
+        Film film = jdbc.queryForObject(sql,filmRowMapper,id);
+        return film;
     }
 
     @Override
@@ -101,7 +116,7 @@ public class DbFilmRepository implements FilmRepository {
     public Collection<Genre> getGenres() {
         String sql = "SELECT * FROM genres;";
         List <Genre> genres = jdbc.query(sql, genreRowMapper);
-        return List.of();
+        return genres;
     }
 
     @Override
@@ -123,5 +138,11 @@ public class DbFilmRepository implements FilmRepository {
         String sql = "SELECT * FROM mpa WHERE id = ?;";
         Mpa mpa = jdbc.queryForObject(sql,mpaRowMapper, id);
         return mpa;
+    }
+
+    public Set<Genre> loadGenres(Long film_id){
+        String sql = "SELECT genres.* FROM genres WHERE film_id = ?;";
+       // Set<Genre> genres = jdbc.query(sql,genreRowMapper, film_id);
+        return null;
     }
 }

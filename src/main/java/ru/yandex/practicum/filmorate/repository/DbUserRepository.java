@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.AllArgsConstructor;
-import org.postgresql.ds.PGConnectionPoolDataSource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,20 +10,19 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.mappers.UserRowMapper;
 
-import javax.sql.PooledConnection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
 @Primary
-public class UserDbRepository implements UserRepository {
-    private  JdbcTemplate jdbc;
+public class DbUserRepository implements UserRepository {
+    private JdbcTemplate jdbc;
     private final UserRowMapper mapper;
 
     @Override
@@ -36,8 +34,18 @@ public class UserDbRepository implements UserRepository {
 
     @Override
     public User getUserById(Long id) {
+        checkUserId(id);
         String sql = "SELECT * FROM users WHERE id = ?";
         User user = jdbc.queryForObject(sql, mapper, id);
+        String sql1 = "SELECT users.* FROM friends JOIN users ON friends.friend_id = users.id " +
+                "WHERE friends.user_id = ?";
+
+        List<User> friends = jdbc.query(sql1, mapper, id);
+        Set<Long> friendIds = friends
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+        user.setFriends(new LinkedHashSet<>(friendIds));
         return user;
     }
 
@@ -51,7 +59,7 @@ public class UserDbRepository implements UserRepository {
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
-            ps.setDate (4, Date.valueOf(user.getBirthday()));
+            ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
         Long generatedId = keyHolder.getKey().longValue();
@@ -61,37 +69,46 @@ public class UserDbRepository implements UserRepository {
 
     @Override
     public User updateUser(User newUser) {
-
+        checkUserId(newUser.getId());
         String checkSql = "SELECT COUNT(*) FROM users WHERE id = ?";
         Integer count = jdbc.queryForObject(checkSql, Integer.class, newUser.getId());
 
         if (count == null || count == 0) {
-            throw new NotFoundException("User with id " + newUser.getId() + " not found");}
+            throw new NotFoundException("User with id " + newUser.getId() + " not found");
+        }
 
         String sql = "Update users Set email = ?, login = ?, name = ?, birthday = ? WHERE id =?";
-        jdbc.update(sql, newUser.getEmail(), newUser.getLogin(), newUser.getName(), newUser.getBirthday(), newUser.getId());
+        jdbc.update(sql, newUser.getEmail(), newUser.getLogin(), newUser.getName(),
+                newUser.getBirthday(), newUser.getId());
 
         return newUser;
     }
 
     @Override
     public void deleteUser(Long id) {
-
+        checkUserId(id);
+        String sql = "DELETE FROM users WHERE id = ?";
+        jdbc.update(sql, id);
     }
 
     @Override
     public List<User> getUserFriends(Long id) {
-        return List.of();
+        checkUserId(id);
+
+        String sql1 = "SELECT users.* FROM friends JOIN users ON friends.friend_id = users.id " +
+                "WHERE friends.user_id = ?";
+        List<User> friends = jdbc.query(sql1, mapper, id);
+        return friends;
+
     }
 
     @Override
     public List<User> updateUserFriends(Long id, Long friendId) {
+        checkUserId(id);
+        checkUserId(friendId);
+
         String sql = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
         jdbc.update(sql, id, friendId);
-
-
-
-
         String sql1 = "SELECT * FROM users WHERE id = ?";
         List<User> users = jdbc.query(sql1, mapper, id);
         return users;
@@ -99,11 +116,30 @@ public class UserDbRepository implements UserRepository {
 
     @Override
     public List<User> deleteUserFriends(Long id, Long friendId) {
-        return List.of();
+        checkUserId(id);
+        checkUserId(friendId);
+        String sql = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+        jdbc.update(sql, id, friendId);
+        String sql1 = "SELECT * FROM users WHERE id = ?";
+        List<User> users = jdbc.query(sql1, mapper, id);
+        return users;
     }
 
     @Override
     public Set<User> getCommonFriends(Long id, Long otherId) {
+        checkUserId(id);
+        checkUserId(otherId);
+
+
         return Set.of();
     }
+
+    public void checkUserId(Long userId) {
+        String sql = "SELECT COUNT(*) FROM users WHERE id = ?";
+        if (jdbc.queryForObject(sql, Integer.class, userId) == 0) {
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
+    }
+
+
 }
