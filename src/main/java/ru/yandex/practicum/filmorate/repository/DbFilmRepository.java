@@ -31,6 +31,8 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public Film addFilm(Film film) {
+        checkMpaId(film.getMpa().getId());
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO films (name, description, release_date, duration, mpa)" +
                 " VALUES (?, ?, ?, ?, ?)";
@@ -57,8 +59,11 @@ public class DbFilmRepository implements FilmRepository {
     @Override
     public Collection<Film> getAllFilms() {
         String sql = "SELECT films.*, mpa.name as mpa_name FROM films" +
-                " LEFT JOIN mpa ON films.mpa = mpa.id;";
+                " LEFT JOIN mpa ON films.mpa = mpa.id ORDER BY films.id ASC;";
         List <Film> films = jdbc.query(sql, filmRowMapper);
+        for (Film film : films) {
+            film.setGenres(loadGenres(film));
+        }
         return films;
     }
 
@@ -77,11 +82,9 @@ public class DbFilmRepository implements FilmRepository {
         checkFilmId(id);
         String sql = "SELECT films.*, mpa.name as mpa_name FROM films" +
                 " LEFT JOIN mpa ON films.mpa = mpa.id WHERE films.id = ?;";
-        String sql1 = "SELECT * FROM genres JOIN genres_films" +
-                " ON genres.id = genres_films.genre_id WHERE film_id = ?";
+
         Film film = jdbc.queryForObject(sql, filmRowMapper, id);
-        List<Genre> genres = jdbc.query(sql1, genreRowMapper, id);
-        film.setGenres(new LinkedHashSet<>(genres));
+        film.setGenres(loadGenres(film));
         return film;
     }
 
@@ -146,7 +149,7 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     //add
-    public Set<Genre> loadGenres(Long film_id){
+    public Set<Genre> loadGenres1(Long film_id){
         checkFilmId(film_id);
         String sql = "SELECT genres.* FROM genres WHERE film_id = ?;";
        // Set<Genre> genres = jdbc.query(sql,genreRowMapper, film_id);
@@ -179,5 +182,13 @@ public class DbFilmRepository implements FilmRepository {
         if (jdbc.queryForObject(sql,Integer.class,id) == 0){
             throw new NotFoundException("Genre with id " + id + " not found");
         }
+    }
+
+    public Set<Genre> loadGenres(Film film){
+        String sql = "SELECT * FROM genres JOIN genres_films" +
+                " ON genres.id = genres_films.genre_id WHERE film_id = ? ORDER BY genres.id ASC";
+        List<Genre> genres = jdbc.query(sql, genreRowMapper, film.getId());
+        Set<Genre> genres1 = new LinkedHashSet<>(genres);
+        return genres1;
     }
 }
