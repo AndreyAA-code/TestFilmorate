@@ -153,7 +153,6 @@ public class DbFilmRepository implements FilmRepository {
                 "LEFT JOIN films_likes ON films.id = films_likes.film_id " +
                 "LEFT JOIN mpa ON films.mpa = mpa.id GROUP BY films.id, mpa.name " +
                 "ORDER BY COUNT(films_likes.user_id) DESC LIMIT ?";
-
         List <Film> popularFilms = jdbc.query(sql, filmRowMapper, count);
         return popularFilms;
     }
