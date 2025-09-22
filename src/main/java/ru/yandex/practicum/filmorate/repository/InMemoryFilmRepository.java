@@ -103,7 +103,7 @@ public class InMemoryFilmRepository implements FilmRepository {
     @Override
     public Film likeFilmById(Long id, Long userId) {
         checkIfFilmExists(id);
-        films.get(id).getLikes().add(userService.getUserById(userId));
+        films.get(id).getLikes().add(userId);
         return films.get(id);
     }
 

@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.repository.mappers.UserRowMapper;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Primary
@@ -99,7 +100,10 @@ public class DbFilmRepository implements FilmRepository {
         if (!(loadGenres(film).size() == 0)) {
             film.setGenres(loadGenres(film));
         }
-        film.setLikes(loadLikes(film.getId()));
+        film.setLikes(loadLikes(id)
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet()));
         return film;
     }
 
@@ -117,9 +121,13 @@ public class DbFilmRepository implements FilmRepository {
         checkUserId(userId);
         String sql = "INSERT INTO films_likes (user_id, film_id) VALUES (?, ?);";
         jdbc.update(sql, userId, filmId);
-        String sql1 = "SELECT * FROM films WHERE id = ?";
+        String sql1 = "SELECT films.*, mpa.name as mpa_name FROM films" +
+                " LEFT JOIN mpa ON films.mpa = mpa.id WHERE films.id = ?;";
         Film film = jdbc.queryForObject(sql1, filmRowMapper, filmId);
-        film.setLikes(loadLikes(filmId));
+        film.setLikes(loadLikes(filmId)
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet()));
         return film;
     }
 
@@ -129,16 +137,25 @@ public class DbFilmRepository implements FilmRepository {
         checkUserId(userId);
         String sql = "DELETE FROM films_likes where user_id =? AND film_id = ?;";
         jdbc.update(sql, userId, filmId);
-        String sql1 = "Select * from films where id = ?;";
+        String sql1 = "SELECT films.*, mpa.name as mpa_name FROM films" +
+                " LEFT JOIN mpa ON films.mpa = mpa.id WHERE films.id = ?;";
         Film film = jdbc.queryForObject(sql1, filmRowMapper, filmId);
+        film.setLikes(loadLikes(filmId)
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet()));
         return film;
     }
 
     @Override
     public Collection<Film> getPopularFilms(Long count) {
-        String sql ="";
-        List <Film> popularfilms = jdbc.query(sql, filmRowMapper);
-        return popularfilms;
+        String sql ="SELECT films.*, mpa.name as mpa_name, COUNT(films_likes.user_id) as likes_count FROM films " +
+                "LEFT JOIN films_likes ON films.id = films_likes.film_id " +
+                "LEFT JOIN mpa ON films.mpa = mpa.id GROUP BY films.id, mpa.name " +
+                "ORDER BY COUNT(films_likes.user_id) DESC LIMIT ?";
+
+        List <Film> popularFilms = jdbc.query(sql, filmRowMapper, count);
+        return popularFilms;
     }
 
     @Override
@@ -208,7 +225,8 @@ public class DbFilmRepository implements FilmRepository {
     }
 
     public Set<User> loadLikes(Long filmId){
-        String sql = "SELECT * FROM films_likes WHERE film_id = ?;";
+        String sql = "SELECT users.* FROM films_likes JOIN users ON films_likes.user_id = users.id" +
+                " WHERE films_likes.film_id = ?;";
         List <User> likes = jdbc.query(sql, userRowMapper, filmId);
         Set <User> likes1 = new LinkedHashSet<>(likes);
         return likes1;
