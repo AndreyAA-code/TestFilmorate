@@ -21,9 +21,9 @@ public interface FilmRepository {
 
     Film deleteFilmById(Long id);
 
-    Film likeFilmById(Long id, Long userId);
+    Film likeFilmById(Long filmId, Long userId);
 
-    Film deleteLikeUser(Long id, Long userId);
+    Film deleteLikeUser(Long filmId, Long userId);
 
     Collection<Film> getPopularFilms(Long count);
 

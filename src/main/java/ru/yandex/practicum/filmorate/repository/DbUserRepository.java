@@ -29,6 +29,13 @@ public class DbUserRepository implements UserRepository {
     public Collection<User> getAllUsers() {
         String sql = "SELECT * FROM users ORDER BY id ASC";
         List<User> users = jdbc.query(sql, mapper);
+        for (User user : users) {
+            Set<Long> friendIds = getUserFriends(user.getId())
+                    .stream()
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+            user.setFriends(new LinkedHashSet<>(friendIds));
+        }
         return users;
     }
 
@@ -37,16 +44,22 @@ public class DbUserRepository implements UserRepository {
         checkUserId(id);
         String sql = "SELECT * FROM users WHERE id = ?";
         User user = jdbc.queryForObject(sql, mapper, id);
-        String sql1 = "SELECT users.* FROM friends JOIN users ON friends.friend_id = users.id " +
-                "WHERE friends.user_id = ?";
 
-        List<User> friends = jdbc.query(sql1, mapper, id);
-        Set<Long> friendIds = friends
+        Set<Long> friendIds = getUserFriends(id)
                 .stream()
                 .map(User::getId)
                 .collect(Collectors.toSet());
         user.setFriends(new LinkedHashSet<>(friendIds));
         return user;
+    }
+
+    @Override
+    public List<User> getUserFriends(Long id) {
+        checkUserId(id);
+        String sql1 = "SELECT users.* FROM friends JOIN users ON friends.friend_id = users.id " +
+                "WHERE friends.user_id = ?";
+        List<User> friends = jdbc.query(sql1, mapper, id);
+        return friends;
     }
 
     @Override
@@ -70,12 +83,6 @@ public class DbUserRepository implements UserRepository {
     @Override
     public User updateUser(User newUser) {
         checkUserId(newUser.getId());
-        String checkSql = "SELECT COUNT(*) FROM users WHERE id = ?";
-        Integer count = jdbc.queryForObject(checkSql, Integer.class, newUser.getId());
-
-        if (count == null || count == 0) {
-            throw new NotFoundException("User with id " + newUser.getId() + " not found");
-        }
 
         String sql = "Update users Set email = ?, login = ?, name = ?, birthday = ? WHERE id =?";
         jdbc.update(sql, newUser.getEmail(), newUser.getLogin(), newUser.getName(),
@@ -89,17 +96,6 @@ public class DbUserRepository implements UserRepository {
         checkUserId(id);
         String sql = "DELETE FROM users WHERE id = ?";
         jdbc.update(sql, id);
-    }
-
-    @Override
-    public List<User> getUserFriends(Long id) {
-        checkUserId(id);
-
-        String sql1 = "SELECT users.* FROM friends JOIN users ON friends.friend_id = users.id " +
-                "WHERE friends.user_id = ?";
-        List<User> friends = jdbc.query(sql1, mapper, id);
-        return friends;
-
     }
 
     @Override
@@ -129,9 +125,14 @@ public class DbUserRepository implements UserRepository {
     public Set<User> getCommonFriends(Long id, Long otherId) {
         checkUserId(id);
         checkUserId(otherId);
+        String sql = "SELECT users.* FROM friends AS f1 JOIN friends AS f2 \n" +
+                "ON f1.friend_id = f2.friend_id JOIN users ON f1.friend_id = USERs.id " +
+                "WHERE f1.user_Id = ? AND f2.user_Id = ?;";
+        List <User> users = jdbc.query(sql, mapper, id, otherId);
 
+        Set<User> commonFriends = new LinkedHashSet<>(users);
 
-        return Set.of();
+        return commonFriends;
     }
 
     public void checkUserId(Long userId) {

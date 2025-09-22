@@ -55,12 +55,12 @@ public class FilmService {
         return filmRepository.deleteFilmById(id);
     }
 
-    public Film likeFilmById(Long id, Long userId) {
-        return filmRepository.likeFilmById(id, userId);
+    public Film likeFilmById(Long filmId, Long userId) {
+        return filmRepository.likeFilmById(filmId, userId);
     }
 
-    public Film deleteLikeUser(@PathVariable Long id, @PathVariable Long userId) {
-        return filmRepository.deleteLikeUser(id, userId);
+    public Film deleteLikeUser(@PathVariable Long filmId, @PathVariable Long userId) {
+        return filmRepository.deleteLikeUser(filmId, userId);
     }
 
     public Collection<Film> getPopularFilms(Long count) {
@@ -82,6 +82,5 @@ public class FilmService {
     public Mpa getMpaById(Long id) {
         return filmRepository.getMpaById(id);
     }
-
 
 }
