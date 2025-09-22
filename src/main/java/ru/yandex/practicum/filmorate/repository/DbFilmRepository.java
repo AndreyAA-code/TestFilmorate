@@ -48,9 +48,9 @@ public class DbFilmRepository implements FilmRepository {
         Long generatedId = keyHolder.getKey().longValue();
         film.setId(generatedId);
         for (Genre genre : film.getGenres()) {
+            checkGenreId(genre.getId());
             jdbc.update(sql1, genre.getId(),film.getId());
         }
-
         return film;
     }
 
@@ -65,20 +65,16 @@ public class DbFilmRepository implements FilmRepository {
     @Override
     public Film updateFilm(Film newFilm) {
         Film film = new Film();
-        String checkSql = "SELECT COUNT(*) FROM films WHERE id = ?";
-        Integer count = jdbc.queryForObject(checkSql, Integer.class, newFilm.getId());
-
-        if (count == null || count == 0) {
-            throw new NotFoundException("Film with id " + newFilm.getId() + " not found");}
-
+        checkFilmId(newFilm.getId());
         String sql = "Update films Set name = ?, description = ?, release_date = ?, duration = ? WHERE id =?";
         jdbc.update(sql, newFilm.getName(), newFilm.getDescription(), newFilm.getReleaseDate(), newFilm.getDuration(), newFilm.getId());
-
+// проапдейтить mpa и genres
         return newFilm;
     }
 
     @Override
     public Film getFilmById(Long id) {
+        checkFilmId(id);
         String sql = "SELECT films.*, mpa.name as mpa_name FROM films" +
                 " LEFT JOIN mpa ON films.mpa = mpa.id WHERE films.id = ?;";
         String sql1 = "SELECT * FROM genres JOIN genres_films" +
@@ -86,12 +82,12 @@ public class DbFilmRepository implements FilmRepository {
         Film film = jdbc.queryForObject(sql, filmRowMapper, id);
         List<Genre> genres = jdbc.query(sql1, genreRowMapper, id);
         film.setGenres(new LinkedHashSet<>(genres));
-        System.out.println(film.getGenres());
         return film;
     }
 
     @Override
     public Film deleteFilmById(Long id) {
+        checkFilmId(id);
         String sql = "DELETE FROM films WHERE id =?;";
         Film film = jdbc.queryForObject(sql,filmRowMapper,id);
         return film;
@@ -99,16 +95,23 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public Film likeFilmById(Long id, Long userId) {
+        checkFilmId(id);
+        checkUserId(userId);
+        //add
         return null;
     }
 
     @Override
     public Film deleteLikeUser(Long id, Long userId) {
+        checkFilmId(id);
+        checkUserId(userId);
+        //add
         return null;
     }
 
     @Override
     public Collection<Film> getPopularFilms(Long count) {
+        //add
         return List.of();
     }
 
@@ -121,6 +124,7 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public Genre getGenresById(Long id) {
+        checkGenreId(id);
         String sql = "Select * FROM genres WHERE id =?;";
         Genre genre  = jdbc.queryForObject(sql, genreRowMapper,id);
         return genre;
@@ -135,14 +139,45 @@ public class DbFilmRepository implements FilmRepository {
 
     @Override
     public Mpa getMpaById(Long id) {
+        checkMpaId(id);
         String sql = "SELECT * FROM mpa WHERE id = ?;";
         Mpa mpa = jdbc.queryForObject(sql,mpaRowMapper, id);
         return mpa;
     }
 
+    //add
     public Set<Genre> loadGenres(Long film_id){
+        checkFilmId(film_id);
         String sql = "SELECT genres.* FROM genres WHERE film_id = ?;";
        // Set<Genre> genres = jdbc.query(sql,genreRowMapper, film_id);
         return null;
+    }
+
+    public void checkMpaId (Long id){
+        String sql = "SELECT COUNT(*) FROM mpa where id=?;";
+        if (jdbc.queryForObject(sql,Integer.class,id) == 0){
+            throw new NotFoundException("Mpa with id " + id + " not found");
+        };
+    }
+
+    public void checkFilmId(Long id){
+        String sql = "SELECT COUNT(*) FROM films WHERE id = ?;";
+        if (jdbc.queryForObject(sql,Integer.class,id) == 0){
+            throw new NotFoundException("Film with id " + id + " not found");
+        }
+    }
+
+    public void checkUserId(Long id){
+        String sql = "SELECT COUNT(*) FROM users WHERE id = ?;";
+        if (jdbc.queryForObject(sql,Integer.class,id) == 0){
+            throw new NotFoundException("User with id " + id + " not found");
+        }
+    }
+
+    public void checkGenreId(Long id){
+        String sql = "SELECT COUNT(*) FROM genres WHERE id = ?;";
+        if (jdbc.queryForObject(sql,Integer.class,id) == 0){
+            throw new NotFoundException("Genre with id " + id + " not found");
+        }
     }
 }
