@@ -84,7 +84,7 @@ public class DbUserRepository implements UserRepository {
     public User updateUser(User newUser) {
         checkUserId(newUser.getId());
 
-        String sql = "Update users Set email = ?, login = ?, name = ?, birthday = ? WHERE id =?";
+        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id =?";
         jdbc.update(sql, newUser.getEmail(), newUser.getLogin(), newUser.getName(),
                 newUser.getBirthday(), newUser.getId());
 
