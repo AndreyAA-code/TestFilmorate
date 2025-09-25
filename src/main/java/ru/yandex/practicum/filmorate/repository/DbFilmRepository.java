@@ -74,6 +74,7 @@ public class DbFilmRepository implements FilmRepository {
         List <Film> films = jdbc.query(sql, filmRowMapper);
         for (Film film : films) {
             film.setGenres(loadGenres(film));
+            film.setLikes(loadLikes(film.getId()).stream().map(user ->  user.getId()).collect(Collectors.toSet()));
         }
 
         return films;
@@ -87,6 +88,7 @@ public class DbFilmRepository implements FilmRepository {
         jdbc.update(sql, newFilm.getName(), newFilm.getDescription(), newFilm.getReleaseDate(), newFilm.getDuration(), newFilm.getId());
         newFilm.setGenres(loadGenres(newFilm));
         newFilm.setMpa(getMpaById(newFilm.getMpa().getId()));
+        newFilm.setLikes(loadLikes(newFilm.getId()).stream().map(user -> user.getId()).collect(Collectors.toSet()));
         return newFilm;
     }
 
